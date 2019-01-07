@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"      
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+
+<!-- namespace:映射的接口的全名 -->
+<mapper namespace= "cn.tedu.store.mapper.UserMapper" >
+     
+     <!-- 根据执行的SQL种类选择节点 -->
+     <!-- id:抽象方法的名称 -->
+     <!--parameterType:抽象方法的参数类型  -->
+     <!-- SQL语句不需要分号结尾 -->
+     <!-- 插入用户数据 -->
+     <!-- Integer addnew(User user) -->
+    <insert id="addnew" 
+    parameterType="cn.tedu.store.entity.User"
+    useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO  
+                  t_user(
+	           username,password,
+	           salt,gender,
+	           phone, email,
+	           avatar,is_delete,
+	           create_user,create_time,
+	           modified_user ,modified_time 
+           ) 
+           VALUES(
+	           #{username},#{password},
+	           #{salt},#{gender},
+	           #{phone},#{email},
+	           #{avatar},#{isDelete},
+	           #{createUser},  #{createTime},
+	           #{modifiedUser},#{modifiedTime}
+           )
+    </insert>
+    
+    <!-- 根据用户名查询用户数据 -->
+    <!-- 应用于  注册   登录 -->
+    <!-- User findByUsername(String username) -->
+    <select id="findByUsername" resultType="cn.tedu.store.entity.User">
+           SELECT 
+                 id,username,password,
+                 salt,avatar, 
+                 is_delete isDelete
+           FROM
+                 t_user
+           WHERE
+                 username=#{username}            
+    </select>
+    
+    <!-- 修改密码 -->
+    <!-- 根据登录时的session绑定的id去修改用户的密码 -->
+    <!--Integer updatePassword(@Param("uid") Integer uid, @Param("password") String password,
+			@Param("modifiedUser") String modifiedUser, @Param("modifiedTime") Date modifiedTime)  -->
+    <update id="updatePassword">
+        
+        UPDATE
+             t_user
+         SET
+             password=#{password},
+             modified_user=#{modifiedUser},
+             modified_time=#{modifiedTime}
+       WHERE
+             id=#{uid}       
+                   
+    </update>
+    
+    <!-- 根据用户id查询用户密码和盐值 -->
+    <!-- User findById(Integer id) -->
+    
+    <select id="findById" resultType="cn.tedu.store.entity.User">
+       
+       SELECT
+             password,salt,
+             is_delete isDelete,
+             username,gender,
+             phone,email
+             
+       FROM
+             t_user
+       WHERE
+             id=#{id}      
+             
+    </select>
+    
+    <!-- 修改用户信息 -->
+    <!-- Integer  updateInfo(User user) -->
+    <update id="updateInfo">
+        UPDATE 
+               t_user
+        SET
+        <if test="gender != null">
+               gender=#{gender},
+        </if>
+
+        <if test="phone != null">
+                phone=#{phone},
+        </if>
+
+        <if test="email != null">
+                email=#{email},
+        </if>
+
+		        modified_user=#{modifiedUser},
+		        modified_time=#{modifiedTime}
+        WHERE 
+                id=#{id}
+    
+    </update>
+    <!-- 上传用户头像 -->
+    <!-- Integer updateAvatar(@Param("uid") Integer uid,
+			@Param("avatar") String avatar,
+			@Param("modifiedUser") String modifiedUser,
+			@Param("modifiedTime")  Date modifiedTime); -->
+    <update id="updateAvatar">
+       
+        UPDATE
+             t_user
+        SET
+             avatar=#{avatar},
+             modified_user=#{modifiedUser}, 
+             modified_time=#{modifiedTime}    
+        WHERE
+             id=#{uid}
+    </update>
+</mapper>
+
